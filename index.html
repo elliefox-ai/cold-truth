@@ -319,12 +319,19 @@ let solved = false;
 // ═══════════════════════════════════════════════════════════════
 const API = '';
 async function api(path, data) {
-  const resp = await fetch(API + path, {
-    method: data ? 'POST' : 'GET',
-    headers: data ? {'Content-Type':'application/json'} : {},
-    body: data ? JSON.stringify(data) : undefined,
-  });
-  return resp.json();
+  try {
+    const resp = await fetch(API + path, {
+      method: data ? 'POST' : 'GET',
+      headers: data ? {'Content-Type':'application/json'} : {},
+      body: data ? JSON.stringify(data) : undefined,
+    });
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}: ${resp.statusText}`);
+    return await resp.json();
+  } catch (err) {
+    console.error('API error:', path, err);
+    alert('API error: ' + err.message);
+    return null;
+  }
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -333,6 +340,7 @@ async function api(path, data) {
 async function startNewGame() {
   const seed = Math.floor(Math.random() * 10000);
   caseData = await api('/api/new', {seed});
+  if (!caseData) return;
   narrativeEntries = [];
   evidence = [];
   interviewed = new Set();

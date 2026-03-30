@@ -87,9 +87,21 @@ def investigate():
         available.append(clue)
     
     if not available:
+        # Check if there ARE clues here but locked behind prerequisites
+        locked = [c for c in current_case.clues
+                 if c.id not in found_ids
+                 and c.location.lower() == location
+                 and any(req not in found_ids for req in c.requires)]
+        
+        if locked:
+            hint = "You sense there's more to find here, but you need more evidence first."
+        else:
+            hint = None
+        
         return jsonify({
             "found": False,
-            "message": f"Nothing new found in {location}."
+            "message": f"Nothing new found in {location}.",
+            "hint": hint,
         })
     
     # Find the most relevant available clue
@@ -105,6 +117,7 @@ def investigate():
             "description": clue.description,
             "strength": clue.strength,
             "location": clue.location,
+            "points_to": clue.points_to,
             "reveals_truth": clue.reveals_truth,
         },
     })

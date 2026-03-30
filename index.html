@@ -10,6 +10,7 @@
   :root {
     --bg: #0a0a0f;
     --panel: #111118;
+    --card: #16161f;
     --border: #1e1e2e;
     --text: #c8c8d8;
     --muted: #6a6a8a;
@@ -17,6 +18,8 @@
     --accent2: #e05c5c;
     --green: #5ab88f;
     --blue: #5a8fc4;
+    --purple: #9b6de0;
+    --orange: #d4943a;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -28,16 +31,15 @@
 
   /* ── HEADER ─────────────────────────────────────────── */
   header {
-    padding: 20px 32px; border-bottom: 1px solid var(--border);
+    padding: 16px 24px; border-bottom: 1px solid var(--border);
     display: flex; align-items: center; gap: 16px;
   }
   header h1 {
     font-family: 'Playfair Display', serif;
-    font-size: 24px; font-weight: 900;
-    color: var(--accent);
-    letter-spacing: 0.04em;
+    font-size: 22px; font-weight: 900;
+    color: var(--accent); letter-spacing: 0.04em;
   }
-  header .subtitle { color: var(--muted); font-size: 12px; }
+  header .subtitle { color: var(--muted); font-size: 11px; }
   header .new-btn {
     margin-left: auto; padding: 6px 16px;
     background: var(--accent); color: var(--bg);
@@ -45,154 +47,97 @@
     font-family: inherit; font-weight: 700; font-size: 12px;
   }
   header .new-btn:hover { opacity: 0.85; }
+  header .status { font-size: 11px; color: var(--muted); }
 
   /* ── LAYOUT ─────────────────────────────────────────── */
-  main {
-    display: grid; grid-template-columns: 260px 1fr 300px;
-    height: calc(100vh - 65px);
+  .app { display: grid; grid-template-columns: 1fr; height: calc(100vh - 57px); }
+
+  .game-area {
+    display: grid; grid-template-columns: 1fr 320px;
+    grid-template-rows: auto 1fr auto;
+    height: 100%;
   }
 
-  /* ── LEFT: SUSPECTS ─────────────────────────────────── */
-  .sidebar {
-    border-right: 1px solid var(--border);
-    overflow-y: auto; padding: 16px;
-  }
-  .sidebar h2 {
-    font-size: 11px; text-transform: uppercase;
-    letter-spacing: 0.1em; color: var(--muted);
-    margin-bottom: 12px;
-  }
-  .suspect-card {
-    padding: 10px 12px; border: 1px solid var(--border);
-    border-radius: 6px; margin-bottom: 8px; cursor: pointer;
-    transition: border-color 0.2s, background 0.2s;
-  }
-  .suspect-card:hover { border-color: var(--accent); background: #1a1a25; }
-  .suspect-card.interviewed { border-left: 2px solid var(--green); }
-  .suspect-card .name { font-weight: 700; font-size: 13px; }
-  .suspect-card .role { font-size: 11px; color: var(--muted); margin-top: 2px; }
-  .suspect-card .personality {
-    font-size: 10px; color: var(--accent); margin-top: 4px;
-    font-style: italic;
-  }
-
-  /* ── CENTER: NARRATIVE ──────────────────────────────── */
-  .center {
-    padding: 24px 32px; overflow-y: auto;
-    display: flex; flex-direction: column; gap: 16px;
-  }
+  /* ── CASE HEADER ────────────────────────────────────── */
   .case-header {
+    grid-column: 1 / -1; padding: 16px 24px;
+    border-bottom: 1px solid var(--border);
     font-family: 'Playfair Display', serif;
-    font-size: 18px; color: var(--accent);
-    padding-bottom: 12px; border-bottom: 1px solid var(--border);
+    display: none; /* shown when case active */
   }
-  .case-header .victim-name { font-size: 28px; font-weight: 900; }
-  .case-header .detail { font-size: 13px; color: var(--muted); margin-top: 4px; font-family: 'IBM Plex Mono', monospace; }
+  .case-header.active { display: block; }
+  .case-header .victim-name { font-size: 22px; font-weight: 900; color: var(--accent); }
+  .case-header .detail { font-size: 12px; color: var(--muted); margin-top: 2px; font-family: 'IBM Plex Mono', monospace; }
 
-  .narrative-entry {
-    padding: 12px 16px; border-left: 2px solid var(--border);
-    font-size: 13px; line-height: 1.6;
+  /* ── MAIN AREA: CARDS ───────────────────────────────── */
+  .main-area {
+    padding: 16px 24px; overflow-y: auto;
+    display: flex; flex-direction: column; gap: 20px;
   }
-  .narrative-entry.clue-found { border-left-color: var(--accent); }
-  .narrative-entry.interview { border-left-color: var(--blue); }
-  .narrative-entry.accusation { border-left-color: var(--accent2); }
-  .narrative-entry.system { border-left-color: var(--muted); color: var(--muted); }
-  .narrative-entry .timestamp {
-    font-size: 10px; color: var(--muted); margin-bottom: 4px;
+
+  .section-label {
+    font-size: 10px; text-transform: uppercase;
+    letter-spacing: 0.12em; color: var(--muted);
+    padding-bottom: 6px; border-bottom: 1px solid var(--border);
   }
-  .narrative-entry .clue-type {
-    display: inline-block; font-size: 9px; padding: 1px 6px;
-    border-radius: 3px; background: var(--accent); color: var(--bg);
-    font-weight: 700; text-transform: uppercase; margin-right: 4px;
+
+  /* ── CARD GRID ──────────────────────────────────────── */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 10px;
   }
-  .narrative-entry .clue-type.testimony { background: var(--blue); }
-  .narrative-entry .clue-type.document { background: var(--green); }
-  .narrative-entry .clue-type.forensic { background: #9b6de0; }
-  .narrative-entry .clue-type.physical { background: #d4943a; }
-  .narrative-entry .clue-type.circumstantial { background: var(--muted); }
+
+  .card {
+    padding: 12px 14px; border: 1px solid var(--border);
+    border-radius: 8px; cursor: pointer;
+    transition: all 0.15s ease;
+    position: relative;
+  }
+  .card:hover { border-color: var(--accent); background: #1a1a28; transform: translateY(-1px); }
+  .card:active { transform: translateY(0); }
+  .card .card-icon { font-size: 20px; margin-bottom: 6px; }
+  .card .card-title { font-weight: 700; font-size: 13px; }
+  .card .card-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .card .card-badge {
+    position: absolute; top: 8px; right: 8px;
+    font-size: 9px; padding: 1px 6px; border-radius: 3px;
+    font-weight: 700; text-transform: uppercase;
+  }
+
+  /* Card variants */
+  .card.suspect { border-left: 3px solid var(--blue); }
+  .card.suspect.interviewed { border-left-color: var(--green); background: #111a15; }
+  .card.suspect .card-badge { background: var(--blue); color: #fff; }
+  .card.suspect.interviewed .card-badge { background: var(--green); }
+
+  .card.location { border-left: 3px solid var(--orange); }
+  .card.location.searched { border-left-color: var(--muted); }
+  .card.location.has-clue { border-left-color: var(--accent); }
+  .card.location .card-badge { background: var(--orange); color: #fff; }
+  .card.location .clue-count { font-size: 10px; color: var(--accent); margin-top: 4px; }
+  .card.location .hint-text { font-size: 10px; color: var(--muted); margin-top: 4px; font-style: italic; }
+  .card.location.locked { opacity: 0.4; cursor: not-allowed; }
+  .card.location.locked:hover { border-color: var(--border); background: transparent; transform: none; }
+  .card.location.new-location { border-left-color: var(--green); animation: pulse 1.5s ease-in-out; }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(90, 184, 143, 0); }
+    50% { box-shadow: 0 0 12px 2px rgba(90, 184, 143, 0.2); }
+  }
+
+  .card.evidence { border-left: 3px solid var(--purple); cursor: default; }
+  .card.evidence:hover { transform: none; }
+  .card.evidence .card-badge { font-size: 8px; }
+  .card.evidence .evidence-desc { font-size: 11px; line-height: 1.5; margin-top: 4px; }
+  .card.evidence .points-to { font-size: 10px; color: var(--accent); margin-top: 6px; }
 
   .strength-dots { display: inline; margin-left: 4px; }
   .strength-dots .dot {
-    display: inline-block; width: 6px; height: 6px;
-    border-radius: 50%; background: var(--accent); margin-right: 2px;
+    display: inline-block; width: 5px; height: 5px;
+    border-radius: 50%; background: var(--accent); margin-right: 1px;
   }
 
-  /* ── INTERVIEW PANEL ────────────────────────────────── */
-  .interview-panel {
-    background: var(--panel); border: 1px solid var(--border);
-    border-radius: 8px; padding: 16px;
-  }
-  .interview-panel h3 {
-    font-size: 14px; color: var(--blue); margin-bottom: 12px;
-  }
-  .interview-panel .statement {
-    font-style: italic; padding: 8px 12px;
-    background: var(--bg); border-radius: 4px;
-    font-size: 13px; line-height: 1.5; margin-bottom: 12px;
-  }
-  .interview-panel .demeanor {
-    font-size: 11px; color: var(--muted); margin-bottom: 8px;
-  }
-  .follow-up {
-    padding: 8px 12px; border: 1px solid var(--border);
-    border-radius: 4px; margin-bottom: 6px; cursor: pointer;
-    font-size: 12px; color: var(--text); background: none;
-    font-family: inherit; text-align: left; width: 100%;
-  }
-  .follow-up:hover { border-color: var(--blue); background: #1a1a25; }
-  .follow-up .response { 
-    display: none; margin-top: 8px; font-style: italic;
-    color: var(--muted); font-size: 11px;
-  }
-  .follow-up.revealed .response { display: block; }
-
-  /* ── RIGHT: EVIDENCE ────────────────────────────────── */
-  .evidence-panel {
-    border-left: 1px solid var(--border);
-    overflow-y: auto; padding: 16px;
-  }
-  .evidence-panel h2 {
-    font-size: 11px; text-transform: uppercase;
-    letter-spacing: 0.1em; color: var(--muted); margin-bottom: 12px;
-  }
-  .evidence-card {
-    padding: 10px 12px; border: 1px solid var(--border);
-    border-radius: 6px; margin-bottom: 8px;
-    font-size: 12px; line-height: 1.5;
-  }
-  .evidence-card .type-badge {
-    font-size: 9px; padding: 1px 6px; border-radius: 3px;
-    font-weight: 700; text-transform: uppercase;
-    display: inline-block; margin-bottom: 4px;
-  }
-  .evidence-card .points-to {
-    font-size: 10px; color: var(--muted); margin-top: 4px;
-  }
-
-  /* ── INVESTIGATE BAR ────────────────────────────────── */
-  .investigate-bar {
-    position: sticky; bottom: 0; background: var(--panel);
-    border-top: 1px solid var(--border); padding: 12px 16px;
-    display: flex; gap: 8px; align-items: center;
-  }
-  .investigate-bar select, .investigate-bar button {
-    padding: 8px 12px; border-radius: 4px;
-    font-family: inherit; font-size: 12px;
-  }
-  .investigate-bar select {
-    background: var(--bg); color: var(--text);
-    border: 1px solid var(--border); flex: 1;
-  }
-  .investigate-bar button {
-    background: var(--accent); color: var(--bg);
-    border: none; font-weight: 700; cursor: pointer;
-  }
-  .investigate-bar button:hover { opacity: 0.85; }
-  .investigate-bar button.accuse-btn {
-    background: var(--accent2); margin-left: auto;
-  }
-
-  /* ── ACCUSATION MODAL ───────────────────────────────── */
+  /* ── INTERVIEW MODAL ────────────────────────────────── */
   .modal-overlay {
     position: fixed; inset: 0; z-index: 100;
     background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
@@ -200,24 +145,68 @@
   }
   .modal-overlay.hidden { display: none; }
   .modal {
-    background: var(--panel); border: 1px solid var(--accent2);
-    border-radius: 12px; padding: 24px; width: 400px;
-    text-align: center;
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 12px; padding: 24px; width: 480px; max-width: 95vw;
+    max-height: 80vh; overflow-y: auto;
   }
-  .modal h3 { font-family: 'Playfair Display', serif; color: var(--accent2); margin-bottom: 16px; }
-  .modal select {
-    width: 100%; padding: 10px; margin-bottom: 12px;
-    background: var(--bg); color: var(--text);
-    border: 1px solid var(--border); border-radius: 4px;
-    font-family: inherit;
+  .modal h3 {
+    font-family: 'Playfair Display', serif;
+    color: var(--blue); margin-bottom: 4px;
   }
-  .modal button {
+  .modal .demeanor { font-size: 11px; color: var(--muted); margin-bottom: 12px; }
+  .modal .statement {
+    font-style: italic; padding: 12px;
+    background: var(--bg); border-radius: 6px;
+    font-size: 13px; line-height: 1.6; margin-bottom: 16px;
+    border-left: 2px solid var(--blue);
+  }
+  .modal .meta { font-size: 11px; color: var(--muted); margin-bottom: 16px; }
+
+  .follow-up-btn {
+    display: block; width: 100%; padding: 10px 12px;
+    border: 1px solid var(--border); border-radius: 6px;
+    margin-bottom: 8px; cursor: pointer; font-size: 12px;
+    font-family: inherit; text-align: left; color: var(--text);
+    background: var(--card);
+  }
+  .follow-up-btn:hover { border-color: var(--blue); }
+  .follow-up-btn .response {
+    display: none; margin-top: 8px; padding-top: 8px;
+    border-top: 1px solid var(--border);
+    font-style: italic; color: var(--muted); font-size: 11px;
+  }
+  .follow-up-btn.revealed .response { display: block; }
+
+  .modal .close-btn {
+    margin-top: 12px; padding: 8px 20px;
+    background: var(--border); border: none; border-radius: 4px;
+    color: var(--text); font-family: inherit; cursor: pointer;
+  }
+  .modal .close-btn:hover { background: var(--muted); }
+
+  /* ── ACCUSATION ─────────────────────────────────────── */
+  .modal.accuse { border-color: var(--accent2); }
+  .modal.accuse h3 { color: var(--accent2); }
+  .modal .suspect-choices {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+    margin: 16px 0;
+  }
+  .modal .suspect-choice {
+    padding: 10px; border: 1px solid var(--border);
+    border-radius: 6px; cursor: pointer; text-align: center;
+    font-size: 12px; font-family: inherit;
+    background: var(--card); color: var(--text);
+  }
+  .modal .suspect-choice:hover { border-color: var(--accent2); background: #1f1a1a; }
+  .modal .suspect-choice.selected { border-color: var(--accent2); background: #2a1515; }
+
+  .modal .confirm-btn {
     padding: 10px 24px; border: none; border-radius: 4px;
     font-family: inherit; font-weight: 700; cursor: pointer;
-    margin: 0 4px;
+    background: var(--accent2); color: white; font-size: 13px;
   }
-  .modal .confirm { background: var(--accent2); color: white; }
-  .modal .cancel { background: var(--border); color: var(--text); }
+  .modal .confirm-btn:hover { opacity: 0.85; }
+  .modal .confirm-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 
   /* ── RESULT ─────────────────────────────────────────── */
   .result-correct { color: var(--green); }
@@ -225,83 +214,122 @@
   .truth-box {
     background: var(--bg); border: 1px solid var(--border);
     border-radius: 6px; padding: 16px; margin-top: 16px;
-    text-align: left; font-size: 13px; line-height: 1.6;
+    font-size: 13px; line-height: 1.6; text-align: left;
   }
-  .truth-box h4 { color: var(--accent); margin-bottom: 8px; }
+  .truth-box h4 { color: var(--accent); margin-bottom: 8px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; }
+
+  /* ── BOTTOM BAR ─────────────────────────────────────── */
+  .bottom-bar {
+    grid-column: 1 / -1; padding: 12px 24px;
+    border-top: 1px solid var(--border);
+    display: flex; gap: 12px; align-items: center;
+    background: var(--panel);
+  }
+  .bottom-bar .accuse-btn {
+    margin-left: auto; padding: 8px 20px;
+    background: var(--accent2); color: white;
+    border: none; border-radius: 4px; cursor: pointer;
+    font-family: inherit; font-weight: 700; font-size: 12px;
+  }
+  .bottom-bar .accuse-btn:hover { opacity: 0.85; }
+  .bottom-bar .accuse-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  /* ── EVIDENCE PANEL (RIGHT) ─────────────────────────── */
+  .evidence-panel {
+    border-left: 1px solid var(--border);
+    overflow-y: auto; padding: 16px;
+    background: var(--panel);
+  }
+  .evidence-panel h2 {
+    font-size: 10px; text-transform: uppercase;
+    letter-spacing: 0.12em; color: var(--muted); margin-bottom: 12px;
+  }
+  .evidence-card {
+    padding: 10px 12px; border: 1px solid var(--border);
+    border-radius: 6px; margin-bottom: 8px;
+    font-size: 11px; line-height: 1.5;
+    border-left: 3px solid var(--purple);
+  }
+  .evidence-card .type-badge {
+    font-size: 8px; padding: 1px 5px; border-radius: 3px;
+    font-weight: 700; text-transform: uppercase;
+    display: inline-block; margin-bottom: 4px;
+  }
+  .evidence-card .points-to { font-size: 10px; color: var(--accent); margin-top: 4px; }
 
   /* ── EMPTY STATE ────────────────────────────────────── */
   .empty-state {
     display: flex; flex-direction: column;
     align-items: center; justify-content: center;
     height: 100%; color: var(--muted); text-align: center;
-    gap: 8px;
+    gap: 12px; grid-column: 1 / -1;
   }
   .empty-state .big { font-size: 48px; }
+  .empty-state p { max-width: 360px; font-size: 13px; line-height: 1.6; }
 </style>
 </head>
 <body>
 
 <header>
   <h1>COLD TRUTH</h1>
-  <span class="subtitle">A Procedural Detective Game</span>
+  <span class="subtitle">Procedural Detective</span>
+  <span class="status" id="status-text"></span>
   <button class="new-btn" onclick="startNewGame()">New Case</button>
 </header>
 
-<main>
-  <!-- LEFT: Suspects -->
-  <div class="sidebar">
-    <h2>Suspects</h2>
-    <div id="suspect-list">
+<div class="app">
+  <div class="game-area">
+    <!-- Case Header -->
+    <div class="case-header" id="case-header">
+      <div class="victim-name" id="victim-name"></div>
+      <div class="detail" id="case-detail"></div>
+    </div>
+
+    <!-- Main: Cards -->
+    <div class="main-area" id="main-area">
       <div class="empty-state">
-        <div>Start a new case to see suspects</div>
+        <div class="big">🔍</div>
+        <p>Click <strong>New Case</strong> to begin. Investigate locations, interview suspects, collect evidence, and deduce the killer.</p>
+        <p style="font-size:11px">Every case is procedurally generated and logically solvable.</p>
       </div>
     </div>
-  </div>
 
-  <!-- CENTER: Narrative -->
-  <div class="center" id="narrative">
-    <div class="empty-state">
-      <div class="big">🔍</div>
-      <div>Click <strong>New Case</strong> to begin</div>
-      <div style="font-size:11px;max-width:300px;margin-top:8px">
-        Investigate locations, interview suspects, collect evidence,
-        and deduce the killer. Every case is procedurally generated
-        and logically solvable.
-      </div>
+    <!-- Right: Evidence -->
+    <div class="evidence-panel" id="evidence-panel">
+      <h2>Evidence Board <span id="clue-count"></span></h2>
+      <div id="evidence-list"></div>
+    </div>
+
+    <!-- Bottom Bar -->
+    <div class="bottom-bar" id="bottom-bar" style="display:none">
+      <span style="font-size:11px;color:var(--muted)">
+        💡 Click location cards to search · Click suspect cards to interview
+      </span>
+      <button class="accuse-btn" onclick="openAccuse()">Make Accusation</button>
     </div>
   </div>
+</div>
 
-  <!-- RIGHT: Evidence -->
-  <div class="evidence-panel">
-    <h2>Evidence Board <span id="clue-count"></span></h2>
-    <div id="evidence-list"></div>
-  </div>
-</main>
-
-<!-- INVESTIGATE BAR -->
-<div class="investigate-bar" id="investigate-bar" style="display:none">
-  <select id="location-select">
-    <option value="">Investigate location...</option>
-  </select>
-  <button onclick="investigate()">Search</button>
-  <button class="accuse-btn" onclick="openAccuse()">Make Accusation</button>
+<!-- INTERVIEW MODAL -->
+<div class="modal-overlay hidden" id="interview-modal">
+  <div class="modal" id="interview-content"></div>
 </div>
 
 <!-- ACCUSATION MODAL -->
 <div class="modal-overlay hidden" id="accuse-modal">
-  <div class="modal">
+  <div class="modal accuse">
     <h3>Make Your Accusation</h3>
-    <p style="font-size:12px;color:var(--muted);margin-bottom:16px">
-      Choose carefully. You only get one chance.
-    </p>
-    <select id="accuse-select">
-      <option value="">Select a suspect...</option>
-    </select>
-    <div>
-      <button class="cancel" onclick="closeAccuse()">Cancel</button>
-      <button class="confirm" onclick="submitAccusation()">Accuse</button>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:12px">Choose carefully. You only get one chance.</p>
+    <div class="suspect-choices" id="accuse-choices"></div>
+    <div style="text-align:center">
+      <button class="confirm-btn" id="accuse-confirm" disabled onclick="submitAccusation()">Accuse</button>
     </div>
   </div>
+</div>
+
+<!-- RESULT MODAL -->
+<div class="modal-overlay hidden" id="result-modal">
+  <div class="modal" id="result-content"></div>
 </div>
 
 <script>
@@ -309,18 +337,18 @@
 // STATE
 // ═══════════════════════════════════════════════════════════════
 let caseData = null;
-let narrativeEntries = [];
 let evidence = [];
 let interviewed = new Set();
+let locations = new Map(); // name -> {searched: bool, cluesFound: int, available: int, hint: string}
 let solved = false;
+let accuseTarget = null;
 
 // ═══════════════════════════════════════════════════════════════
 // API
 // ═══════════════════════════════════════════════════════════════
-const API = '';
 async function api(path, data) {
   try {
-    const resp = await fetch(API + path, {
+    const resp = await fetch(path, {
       method: data ? 'POST' : 'GET',
       headers: data ? {'Content-Type':'application/json'} : {},
       body: data ? JSON.stringify(data) : undefined,
@@ -329,7 +357,6 @@ async function api(path, data) {
     return await resp.json();
   } catch (err) {
     console.error('API error:', path, err);
-    alert('API error: ' + err.message);
     return null;
   }
 }
@@ -341,194 +368,245 @@ async function startNewGame() {
   const seed = Math.floor(Math.random() * 10000);
   caseData = await api('/api/new', {seed});
   if (!caseData) return;
-  narrativeEntries = [];
+
   evidence = [];
   interviewed = new Set();
+  locations = new Map();
   solved = false;
+  accuseTarget = null;
 
-  // Render header
-  addNarrative('system', `Case #${seed}: A murder has been committed.`);
-  addNarrative('system',
-    `${caseData.victim.name} was found dead in ${caseData.crime_scene}. ` +
-    `Cause of death: ${caseData.cause_of_death}. ` +
-    `There are ${caseData.suspects.length} suspects.`
-  );
+  // Set up initial locations from case data
+  locations.set(caseData.crime_scene, {searched: false, cluesFound: 0, available: -1, hint: 'Crime scene — investigate first', isNew: false});
 
-  renderSuspects();
-  renderNarrative();
-  renderEvidence();
-
-  // Load locations
+  // Load full location list
   const locData = await api('/api/locations');
-  const sel = document.getElementById('location-select');
-  sel.innerHTML = '<option value="">Investigate location...</option>';
-  locData.locations.forEach(l => {
-    sel.innerHTML += `<option value="${l}">${l}</option>`;
-  });
+  if (locData) {
+    locData.locations.forEach(l => {
+      if (!locations.has(l)) {
+        locations.set(l, {searched: false, cluesFound: 0, available: -1, hint: '', isNew: false});
+      }
+    });
+  }
 
-  document.getElementById('investigate-bar').style.display = 'flex';
+  // Show case header
+  document.getElementById('case-header').classList.add('active');
+  document.getElementById('victim-name').textContent = caseData.victim.name;
+  document.getElementById('case-detail').textContent =
+    `Found dead in ${caseData.crime_scene} · ${caseData.cause_of_death} · ${caseData.suspects.length} suspects`;
+  document.getElementById('bottom-bar').style.display = 'flex';
 
-  // Populate accuse dropdown
-  const accSel = document.getElementById('accuse-select');
-  accSel.innerHTML = '<option value="">Select a suspect...</option>';
-  caseData.suspects.forEach(s => {
-    accSel.innerHTML += `<option value="${s.name}">${s.name}</option>`;
-  });
+  render();
+  updateStatus();
 }
 
-async function investigate() {
+async function searchLocation(locName) {
   if (solved) return;
-  const loc = document.getElementById('location-select').value;
-  if (!loc) return;
+  const loc = locations.get(locName);
+  if (!loc || locName.startsWith('interview')) return;
 
-  const result = await api('/api/investigate', {location: loc});
+  const result = await api('/api/investigate', {location: locName});
+  if (!result) return;
 
   if (result.found) {
-    const c = result.clue;
-    evidence.push(c);
-    addNarrative('clue-found', '', c);
-    renderEvidence();
-  } else {
-    addNarrative('system', result.message);
+    evidence.push(result.clue);
+    loc.cluesFound++;
+    // Check if clue mentions new locations
+    addLocationsFromText(result.clue.description);
   }
-  renderNarrative();
-  document.getElementById('location-select').value = '';
+
+  loc.searched = true;
+  // Re-check for more clues
+  const recheck = await api('/api/investigate', {location: locName});
+  // Don't process recheck — just use it to count remaining
+  // Actually the first call already found one; recheck would be greedy
+  // Just mark availability hint
+  if (!result.found && loc.searched) {
+    // Check if prerequisites are met — give a hint
+    loc.hint = 'Nothing new here yet. Try finding more evidence first.';
+  }
+
+  render();
+  updateStatus();
 }
 
 async function interviewSuspect(name) {
   if (solved) return;
   const result = await api('/api/interview', {suspect: name});
-
-  if (result.error) {
-    addNarrative('system', result.error);
-    renderNarrative();
-    return;
-  }
+  if (!result || result.error) return;
 
   interviewed.add(name);
-  renderSuspects();
 
-  if (result.already_interviewed) {
-    // Show follow-up questions in narrative
-    let html = `<div class="interview-panel">
-      <h3>Follow-up: ${name}</h3>`;
-    result.deeper_questions.forEach(q => {
-      html += `<button class="follow-up" onclick="revealFollowUp(this)">
-        ${q.topic}
-        <div class="response">"${q.response}"</div>
-      </button>`;
-    });
-    html += '</div>';
-    addNarrative('interview', html);
-  } else {
-    addNarrative('interview',
-      `<div class="interview-panel">
-        <h3>Interview: ${name}</h3>
-        <div class="demeanor">Demeanor: ${result.demeanor}</div>
-        <div class="statement">"${result.initial_statement}"</div>
-        <div style="font-size:11px;color:var(--muted)">
-          Relationship: ${result.relationship}
-        </div>
-      </div>`
-    );
+  // Check for new locations in testimony
+  addLocationsFromText(result.initial_statement || '');
+  if (result.alibi) addLocationsFromText(result.alibi);
+  if (result.deeper_questions) {
+    result.deeper_questions.forEach(q => addLocationsFromText(q.topic + ' ' + q.response));
   }
-  renderNarrative();
+
+  showInterviewModal(result);
+  render();
+  updateStatus();
 }
 
-function revealFollowUp(btn) {
-  btn.classList.toggle('revealed');
+function addLocationsFromText(text) {
+  // Scan text for location-like references
+  const locationKeywords = [
+    'wine cellar', 'study', 'library', 'garden', 'kitchen',
+    'conservatory', 'garage', 'hallway', 'dining room', 'bedroom',
+    'basement', 'attic', 'balcony', 'terrace', 'stable', 'chapel',
+    'pantry', 'lounge', 'office', 'drawing room',
+  ];
+  locationKeywords.forEach(loc => {
+    const fullName = loc.startsWith('the ') ? loc : 'the ' + loc;
+    const shortName = 'the ' + loc.split(' ').pop();
+    // Match both "the wine cellar" and "wine cellar"
+    if (text.toLowerCase().includes(loc) && !locations.has(fullName) && !locations.has(loc)) {
+      const key = 'the ' + loc;
+      if (!locations.has(key)) {
+        locations.set(key, {searched: false, cluesFound: 0, available: -1, hint: 'Mentioned in testimony', isNew: true});
+      }
+    }
+  });
+}
+
+function showInterviewModal(result) {
+  const modal = document.getElementById('interview-content');
+  let html = `<h3>${result.suspect}</h3>
+    <div class="demeanor">Demeanor: ${result.demeanor || 'guarded'} · ${result.relationship || ''}</div>`;
+
+  if (result.already_interviewed) {
+    html += `<div class="meta">Follow-up questions:</div>`;
+    if (result.deeper_questions) {
+      result.deeper_questions.forEach(q => {
+        html += `<button class="follow-up-btn" onclick="this.classList.toggle('revealed')">
+          ${q.topic}
+          <div class="response">"${q.response}"</div>
+        </button>`;
+      });
+    }
+  } else {
+    html += `<div class="statement">"${result.initial_statement}"</div>
+      <div class="meta">Click to ask follow-up questions later.</div>`;
+  }
+
+  html += `<button class="close-btn" onclick="document.getElementById('interview-modal').classList.add('hidden')">Close</button>`;
+  modal.innerHTML = html;
+  document.getElementById('interview-modal').classList.remove('hidden');
 }
 
 function openAccuse() {
+  if (!caseData || solved) return;
+  accuseTarget = null;
+  const choices = document.getElementById('accuse-choices');
+  choices.innerHTML = caseData.suspects.map(s =>
+    `<div class="suspect-choice" onclick="selectAccuse(this, '${s.name}')">${s.name}<br><span style="font-size:10px;color:var(--muted)">${s.role}</span></div>`
+  ).join('');
+  document.getElementById('accuse-confirm').disabled = true;
   document.getElementById('accuse-modal').classList.remove('hidden');
 }
-function closeAccuse() {
-  document.getElementById('accuse-modal').classList.add('hidden');
+
+function selectAccuse(el, name) {
+  document.querySelectorAll('.suspect-choice').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  accuseTarget = name;
+  document.getElementById('accuse-confirm').disabled = false;
 }
 
 async function submitAccusation() {
-  const name = document.getElementById('accuse-select').value;
-  if (!name) return;
+  if (!accuseTarget) return;
+  document.getElementById('accuse-modal').classList.add('hidden');
 
-  closeAccuse();
-  const result = await api('/api/accuse', {suspect: name});
+  const result = await api('/api/accuse', {suspect: accuseTarget});
+  if (!result) return;
   solved = true;
 
+  const modal = document.getElementById('result-content');
   if (result.correct) {
-    addNarrative('accusation',
-      `<div class="result-correct" style="font-size:18px;font-weight:700;font-family:'Playfair Display',serif">
-        ✓ CASE CLOSED
-      </div>
-      <div style="margin-top:8px">You correctly identified ${name} as the killer.</div>
+    modal.innerHTML = `
+      <h3 class="result-correct" style="font-size:24px;font-family:'Playfair Display',serif">✓ CASE CLOSED</h3>
+      <p style="margin-top:8px">You correctly identified <strong>${accuseTarget}</strong> as the killer.</p>
       <div class="truth-box">
         <h4>The Truth</h4>
         ${result.truth}
         <br><br>
         <pre style="white-space:pre-wrap;font-family:inherit;font-size:12px;color:var(--muted)">${result.solution}</pre>
-      </div>`
-    );
-  } else {
-    addNarrative('accusation',
-      `<div class="result-wrong" style="font-size:18px;font-weight:700;font-family:'Playfair Display',serif">
-        ✗ WRONG
       </div>
-      <div style="margin-top:8px">${result.hint}</div>
-      <div style="font-size:12px;color:var(--muted);margin-top:8px">
-        The real killer was ${result.killer}.
-      </div>`
-    );
+      <button class="close-btn" onclick="document.getElementById('result-modal').classList.add('hidden')">Close</button>`;
+  } else {
+    modal.innerHTML = `
+      <h3 class="result-wrong" style="font-size:24px;font-family:'Playfair Display',serif">✗ WRONG</h3>
+      <p style="margin-top:8px">${result.hint}</p>
+      <p style="margin-top:8px;font-size:12px;color:var(--muted)">The real killer was <strong>${result.killer}</strong>.</p>
+      <button class="close-btn" onclick="document.getElementById('result-modal').classList.add('hidden')">Close</button>`;
   }
-  renderNarrative();
+  document.getElementById('result-modal').classList.remove('hidden');
+  updateStatus();
 }
 
 // ═══════════════════════════════════════════════════════════════
 // RENDERING
 // ═══════════════════════════════════════════════════════════════
-function addNarrative(type, content, clue) {
-  narrativeEntries.push({type, content, clue, turn: narrativeEntries.length + 1});
-}
+function render() {
+  if (!caseData) return;
 
-function renderNarrative() {
-  const el = document.getElementById('narrative');
+  const main = document.getElementById('main-area');
   let html = '';
 
-  if (caseData) {
-    html += `<div class="case-header">
-      <div class="victim-name">${caseData.victim.name}</div>
-      <div class="detail">Found dead in ${caseData.crime_scene} · ${caseData.cause_of_death}</div>
+  // ── Suspects ──────────────────────────────────────
+  html += '<div class="section-label">Suspects — click to interview</div>';
+  html += '<div class="card-grid">';
+  caseData.suspects.forEach(s => {
+    const done = interviewed.has(s.name);
+    html += `<div class="card suspect ${done ? 'interviewed' : ''}" onclick="interviewSuspect('${s.name}')">
+      <div class="card-icon">${done ? '✓' : '👤'}</div>
+      <div class="card-title">${s.name}</div>
+      <div class="card-sub">${s.role}</div>
+      ${done ? '<div class="card-badge">Interviewed</div>' : ''}
     </div>`;
-  }
-
-  narrativeEntries.forEach(entry => {
-    const cls = entry.type;
-    if (cls === 'clue-found' && entry.clue) {
-      const c = entry.clue;
-      const dots = Array(c.strength).fill('<span class="dot"></span>').join('');
-      html += `<div class="narrative-entry ${cls}">
-        <span class="clue-type ${c.type}">${c.type}</span>
-        <span class="strength-dots">${dots}</span>
-        <div style="margin-top:6px">${c.description}</div>
-      </div>`;
-    } else {
-      html += `<div class="narrative-entry ${cls}">${entry.content}</div>`;
-    }
   });
+  html += '</div>';
 
-  el.innerHTML = html;
-  el.scrollTop = el.scrollHeight;
-}
+  // ── Locations ─────────────────────────────────────
+  html += '<div class="section-label" style="margin-top:8px">Locations — click to search</div>';
+  html += '<div class="card-grid">';
+  locations.forEach((loc, name) => {
+    const isInterview = name.startsWith('interview');
+    if (isInterview) return; // skip interview pseudo-locations
 
-function renderSuspects() {
-  if (!caseData) return;
-  const el = document.getElementById('suspect-list');
-  el.innerHTML = caseData.suspects.map(s => `
-    <div class="suspect-card ${interviewed.has(s.name) ? 'interviewed' : ''}"
-         onclick="interviewSuspect('${s.name}')">
-      <div class="name">${s.name}</div>
-      <div class="role">${s.role}</div>
-      <div class="personality">${s.personality}</div>
-    </div>
-  `).join('');
+    const isNew = loc.isNew;
+    const cls = [
+      'card', 'location',
+      loc.searched && loc.cluesFound > 0 ? 'has-clue' : '',
+      loc.searched && loc.cluesFound === 0 ? 'searched' : '',
+      isNew ? 'new-location' : '',
+    ].filter(Boolean).join(' ');
+
+    const icon = name === caseData.crime_scene ? '🚨' :
+                 name.includes('kitchen') ? '🍳' :
+                 name.includes('garden') ? '🌿' :
+                 name.includes('library') ? '📚' :
+                 name.includes('study') || name.includes('office') ? '📝' :
+                 name.includes('cellar') || name.includes('basement') ? '🕯️' :
+                 name.includes('bedroom') ? '🛏️' :
+                 name.includes('garage') ? '🔧' :
+                 name.includes('conservatory') ? '🎹' :
+                 name.includes('river') || name.includes('pond') ? '🌊' :
+                 name.includes('attic') ? '📦' : '📍';
+
+    html += `<div class="${cls}" onclick="searchLocation('${name}')">
+      <div class="card-icon">${icon}</div>
+      <div class="card-title">${name}</div>
+      ${loc.cluesFound > 0 ? `<div class="clue-count">${loc.cluesFound} evidence found</div>` : ''}
+      ${loc.searched && loc.cluesFound === 0 ? `<div class="hint-text">${loc.hint || 'Searched — nothing yet'}</div>` : ''}
+      ${isNew ? '<div class="card-badge" style="background:var(--green);color:#fff">New</div>' : ''}
+    </div>`;
+  });
+  html += '</div>';
+
+  main.innerHTML = html;
+
+  // ── Evidence panel ────────────────────────────────
+  renderEvidence();
 }
 
 function renderEvidence() {
@@ -547,11 +625,18 @@ function renderEvidence() {
       <span class="type-badge" style="background:${typeColors[c.type] || 'var(--muted)'};color:#fff">
         ${c.type}
       </span>
-      <div>${c.description}</div>
+      <span class="strength-dots">${Array(c.strength).fill('<span class="dot"></span>').join('')}</span>
+      <div class="evidence-desc">${c.description}</div>
       ${c.points_to && c.points_to !== 'nobody' ?
         `<div class="points-to">→ ${c.points_to}</div>` : ''}
     </div>
   `).join('');
+}
+
+function updateStatus() {
+  const el = document.getElementById('status-text');
+  if (!caseData) { el.textContent = ''; return; }
+  el.textContent = `Evidence: ${evidence.length} · Interviewed: ${interviewed.size}/${caseData.suspects.length}${solved ? ' · SOLVED' : ''}`;
 }
 </script>
 </body>

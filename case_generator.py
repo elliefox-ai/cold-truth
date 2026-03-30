@@ -124,6 +124,7 @@ class Clue:
     strength: int           # 1-5, how directly it points
     requires: list[str]     # clue IDs that must be found first
     reveals_truth: bool     # does this directly confirm the killer?
+    mentions_locations: list[str] = field(default_factory=list)  # locations mentioned in description
 
 
 @dataclass

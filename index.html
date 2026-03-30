@@ -40,6 +40,16 @@
     color: var(--accent); letter-spacing: 0.04em;
   }
   header .subtitle { color: var(--muted); font-size: 11px; }
+  header .nav-tabs {
+    display: flex; gap: 4px; margin-left: 24px;
+  }
+  header .nav-tab {
+    padding: 6px 14px; border: 1px solid var(--border);
+    border-radius: 4px; cursor: pointer; font-size: 11px;
+    font-family: inherit; background: transparent; color: var(--muted);
+  }
+  header .nav-tab:hover { border-color: var(--accent); color: var(--text); }
+  header .nav-tab.active { background: var(--accent); color: var(--bg); border-color: var(--accent); font-weight: 700; }
   header .new-btn {
     margin-left: auto; padding: 6px 16px;
     background: var(--accent); color: var(--bg);
@@ -63,7 +73,7 @@
     grid-column: 1 / -1; padding: 16px 24px;
     border-bottom: 1px solid var(--border);
     font-family: 'Playfair Display', serif;
-    display: none; /* shown when case active */
+    display: none;
   }
   .case-header.active { display: block; }
   .case-header .victim-name { font-size: 22px; font-weight: 900; color: var(--accent); }
@@ -74,6 +84,7 @@
     padding: 16px 24px; overflow-y: auto;
     display: flex; flex-direction: column; gap: 20px;
   }
+  .main-area.hidden { display: none; }
 
   .section-label {
     font-size: 10px; text-transform: uppercase;
@@ -105,7 +116,6 @@
     font-weight: 700; text-transform: uppercase;
   }
 
-  /* Card variants */
   .card.suspect { border-left: 3px solid var(--blue); }
   .card.suspect.interviewed { border-left-color: var(--green); background: #111a15; }
   .card.suspect .card-badge { background: var(--blue); color: #fff; }
@@ -117,8 +127,6 @@
   .card.location .card-badge { background: var(--orange); color: #fff; }
   .card.location .clue-count { font-size: 10px; color: var(--accent); margin-top: 4px; }
   .card.location .hint-text { font-size: 10px; color: var(--muted); margin-top: 4px; font-style: italic; }
-  .card.location.locked { opacity: 0.4; cursor: not-allowed; }
-  .card.location.locked:hover { border-color: var(--border); background: transparent; transform: none; }
   .card.location.new-location { border-left-color: var(--green); animation: pulse 1.5s ease-in-out; }
   @keyframes pulse {
     0%, 100% { box-shadow: 0 0 0 0 rgba(90, 184, 143, 0); }
@@ -130,6 +138,17 @@
   .card.evidence .card-badge { font-size: 8px; }
   .card.evidence .evidence-desc { font-size: 11px; line-height: 1.5; margin-top: 4px; }
   .card.evidence .points-to { font-size: 10px; color: var(--accent); margin-top: 6px; }
+  .card.evidence .review-btn {
+    display: inline-block; margin-top: 6px; padding: 3px 10px;
+    background: var(--border); border: 1px solid var(--muted);
+    border-radius: 3px; cursor: pointer; font-size: 10px;
+    font-family: inherit; color: var(--accent);
+  }
+  .card.evidence .review-btn:hover { background: var(--muted); color: var(--bg); }
+  .card.evidence .reviewed-badge {
+    display: inline-block; font-size: 9px; color: var(--green);
+    margin-top: 6px; margin-left: 6px;
+  }
 
   .strength-dots { display: inline; margin-left: 4px; }
   .strength-dots .dot {
@@ -146,7 +165,7 @@
   .modal-overlay.hidden { display: none; }
   .modal {
     background: var(--panel); border: 1px solid var(--border);
-    border-radius: 12px; padding: 24px; width: 480px; max-width: 95vw;
+    border-radius: 12px; padding: 24px; width: 520px; max-width: 95vw;
     max-height: 80vh; overflow-y: auto;
   }
   .modal h3 {
@@ -170,10 +189,16 @@
     background: var(--card);
   }
   .follow-up-btn:hover { border-color: var(--blue); }
+  .follow-up-btn.locked {
+    opacity: 0.4; cursor: not-allowed;
+    border-color: var(--border);
+  }
+  .follow-up-btn.locked:hover { border-color: var(--border); background: var(--card); }
+  .follow-up-btn .lock-text { font-size: 10px; color: var(--accent2); margin-top: 4px; }
   .follow-up-btn .response {
     display: none; margin-top: 8px; padding-top: 8px;
     border-top: 1px solid var(--border);
-    font-style: italic; color: var(--muted); font-size: 11px;
+    font-style: italic; color: var(--muted); font-size: 11px; line-height: 1.5;
   }
   .follow-up-btn.revealed .response { display: block; }
 
@@ -208,7 +233,6 @@
   .modal .confirm-btn:hover { opacity: 0.85; }
   .modal .confirm-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 
-  /* ── RESULT ─────────────────────────────────────────── */
   .result-correct { color: var(--green); }
   .result-wrong { color: var(--accent2); }
   .truth-box {
@@ -232,7 +256,6 @@
     font-family: inherit; font-weight: 700; font-size: 12px;
   }
   .bottom-bar .accuse-btn:hover { opacity: 0.85; }
-  .bottom-bar .accuse-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 
   /* ── EVIDENCE PANEL (RIGHT) ─────────────────────────── */
   .evidence-panel {
@@ -240,6 +263,7 @@
     overflow-y: auto; padding: 16px;
     background: var(--panel);
   }
+  .evidence-panel.hidden { display: none; }
   .evidence-panel h2 {
     font-size: 10px; text-transform: uppercase;
     letter-spacing: 0.12em; color: var(--muted); margin-bottom: 12px;
@@ -256,6 +280,74 @@
     display: inline-block; margin-bottom: 4px;
   }
   .evidence-card .points-to { font-size: 10px; color: var(--accent); margin-top: 4px; }
+  .evidence-card .review-link {
+    font-size: 10px; color: var(--blue); cursor: pointer;
+    margin-top: 4px; display: inline-block;
+    text-decoration: underline;
+  }
+  .evidence-card .review-link:hover { color: var(--accent); }
+  .evidence-card .reviewed-tag {
+    font-size: 9px; color: var(--green); display: inline-block;
+    margin-left: 6px;
+  }
+  .evidence-card .note-btn {
+    font-size: 10px; color: var(--muted); cursor: pointer;
+    margin-top: 4px; background: none; border: none;
+    font-family: inherit; text-decoration: underline;
+  }
+  .evidence-card .note-btn:hover { color: var(--text); }
+
+  /* ── NOTEBOOK PANEL ─────────────────────────────────── */
+  .notebook-panel {
+    border-left: 1px solid var(--border);
+    overflow-y: auto; padding: 16px;
+    background: var(--panel);
+    display: flex; flex-direction: column;
+  }
+  .notebook-panel.hidden { display: none; }
+  .notebook-panel h2 {
+    font-size: 10px; text-transform: uppercase;
+    letter-spacing: 0.12em; color: var(--muted); margin-bottom: 12px;
+  }
+  .note-entry {
+    padding: 10px 12px; border: 1px solid var(--border);
+    border-radius: 6px; margin-bottom: 8px;
+    font-size: 11px; line-height: 1.5;
+    background: var(--card);
+  }
+  .note-entry .note-time {
+    font-size: 9px; color: var(--muted); margin-bottom: 4px;
+  }
+  .note-entry .note-text { color: var(--text); }
+  .note-entry .note-tag {
+    font-size: 9px; color: var(--blue); margin-top: 4px;
+  }
+  .note-entry .delete-note {
+    float: right; background: none; border: none;
+    color: var(--accent2); cursor: pointer; font-size: 12px;
+    opacity: 0.4;
+  }
+  .note-entry .delete-note:hover { opacity: 1; }
+
+  .note-input-area {
+    margin-top: auto; padding-top: 12px;
+    border-top: 1px solid var(--border);
+  }
+  .note-input-area textarea {
+    width: 100%; padding: 8px 10px;
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 6px; color: var(--text);
+    font-family: inherit; font-size: 12px;
+    resize: vertical; min-height: 60px;
+  }
+  .note-input-area textarea:focus { border-color: var(--accent); outline: none; }
+  .note-input-area .add-note-btn {
+    margin-top: 6px; padding: 6px 14px;
+    background: var(--accent); color: var(--bg);
+    border: none; border-radius: 4px; cursor: pointer;
+    font-family: inherit; font-weight: 700; font-size: 11px;
+  }
+  .note-input-area .add-note-btn:hover { opacity: 0.85; }
 
   /* ── EMPTY STATE ────────────────────────────────────── */
   .empty-state {
@@ -273,19 +365,22 @@
 <header>
   <h1>COLD TRUTH</h1>
   <span class="subtitle">Procedural Detective</span>
+  <div class="nav-tabs">
+    <button class="nav-tab active" id="tab-investigate" onclick="switchTab('investigate')">🔍 Investigate</button>
+    <button class="nav-tab" id="tab-notebook" onclick="switchTab('notebook')">📓 Notebook</button>
+  </div>
   <span class="status" id="status-text"></span>
   <button class="new-btn" onclick="startNewGame()">New Case</button>
 </header>
 
 <div class="app">
   <div class="game-area">
-    <!-- Case Header -->
     <div class="case-header" id="case-header">
       <div class="victim-name" id="victim-name"></div>
       <div class="detail" id="case-detail"></div>
     </div>
 
-    <!-- Main: Cards -->
+    <!-- Investigate Tab -->
     <div class="main-area" id="main-area">
       <div class="empty-state">
         <div class="big">🔍</div>
@@ -294,16 +389,27 @@
       </div>
     </div>
 
-    <!-- Right: Evidence -->
+    <!-- Evidence Panel -->
     <div class="evidence-panel" id="evidence-panel">
       <h2>Evidence Board <span id="clue-count"></span></h2>
-      <div id="evidence-list"></div>
+      <div id="evidence-list">
+        <p style="font-size:11px;color:var(--muted)">Evidence will appear here as you investigate. Click "Review" to analyze.</p>
+      </div>
     </div>
 
-    <!-- Bottom Bar -->
+    <!-- Notebook Panel (replaces evidence when tab active) -->
+    <div class="notebook-panel hidden" id="notebook-panel">
+      <h2>📓 Notebook <span id="note-count"></span></h2>
+      <div id="notes-list"></div>
+      <div class="note-input-area">
+        <textarea id="note-text" placeholder="Write a note..."></textarea>
+        <button class="add-note-btn" onclick="addNote()">Add Note</button>
+      </div>
+    </div>
+
     <div class="bottom-bar" id="bottom-bar" style="display:none">
       <span style="font-size:11px;color:var(--muted)">
-        💡 Click location cards to search · Click suspect cards to interview
+        💡 Click locations to search · Click suspects to interview · Review evidence to reveal analysis
       </span>
       <button class="accuse-btn" onclick="openAccuse()">Make Accusation</button>
     </div>
@@ -332,16 +438,33 @@
   <div class="modal" id="result-content"></div>
 </div>
 
+<!-- NOTE MODAL (quick add from evidence) -->
+<div class="modal-overlay hidden" id="note-modal">
+  <div class="modal">
+    <h3>Add Note</h3>
+    <textarea id="quick-note-text" style="width:100%;padding:8px;margin-top:12px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:inherit;font-size:12px;min-height:80px;resize:vertical" placeholder="Write your observation..."></textarea>
+    <input type="hidden" id="quick-note-evidence">
+    <input type="hidden" id="quick-note-suspect">
+    <div style="margin-top:12px;text-align:right">
+      <button class="close-btn" onclick="document.getElementById('note-modal').classList.add('hidden')">Cancel</button>
+      <button class="confirm-btn" style="background:var(--green);margin-left:8px" onclick="submitQuickNote()">Save</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // ═══════════════════════════════════════════════════════════════
 // STATE
 // ═══════════════════════════════════════════════════════════════
 let caseData = null;
-let evidence = [];
+let evidence = [];       // found clues (without points_to until reviewed)
+let reviewedClues = {};  // clue_id -> {points_to, strength, thread, ...}
 let interviewed = new Set();
-let locations = new Map(); // name -> {searched: bool, cluesFound: int, available: int, hint: string}
+let locations = new Map();
+let notes = [];
 let solved = false;
 let accuseTarget = null;
+let currentTab = 'investigate';
 
 // ═══════════════════════════════════════════════════════════════
 // API
@@ -362,6 +485,27 @@ async function api(path, data) {
 }
 
 // ═══════════════════════════════════════════════════════════════
+// TAB SWITCHING
+// ═══════════════════════════════════════════════════════════════
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+
+  const ep = document.getElementById('evidence-panel');
+  const np = document.getElementById('notebook-panel');
+
+  if (tab === 'notebook') {
+    ep.classList.add('hidden');
+    np.classList.remove('hidden');
+    renderNotes();
+  } else {
+    ep.classList.remove('hidden');
+    np.classList.add('hidden');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
 // GAME FLOW
 // ═══════════════════════════════════════════════════════════════
 async function startNewGame() {
@@ -370,31 +514,31 @@ async function startNewGame() {
   if (!caseData) return;
 
   evidence = [];
+  reviewedClues = {};
   interviewed = new Set();
   locations = new Map();
+  notes = [];
   solved = false;
   accuseTarget = null;
 
-  // Set up initial locations from case data
-  locations.set(caseData.crime_scene, {searched: false, cluesFound: 0, available: -1, hint: 'Crime scene — investigate first', isNew: false});
+  locations.set(caseData.crime_scene, {searched: false, cluesFound: 0, hint: 'Crime scene — investigate first', isNew: false});
 
-  // Load full location list
   const locData = await api('/api/locations');
   if (locData) {
     locData.locations.forEach(l => {
-      if (!locations.has(l)) {
-        locations.set(l, {searched: false, cluesFound: 0, available: -1, hint: '', isNew: false});
+      if (!locations.has(l) && !l.startsWith('interview')) {
+        locations.set(l, {searched: false, cluesFound: 0, hint: '', isNew: false});
       }
     });
   }
 
-  // Show case header
   document.getElementById('case-header').classList.add('active');
   document.getElementById('victim-name').textContent = caseData.victim.name;
   document.getElementById('case-detail').textContent =
     `Found dead in ${caseData.crime_scene} · ${caseData.cause_of_death} · ${caseData.suspects.length} suspects`;
   document.getElementById('bottom-bar').style.display = 'flex';
 
+  switchTab('investigate');
   render();
   updateStatus();
 }
@@ -410,19 +554,14 @@ async function searchLocation(locName) {
   if (result.found) {
     evidence.push(result.clue);
     loc.cluesFound++;
-    // Check if clue mentions new locations
     addLocationsFromText(result.clue.description);
   }
 
   loc.searched = true;
-  // Re-check for more clues
-  const recheck = await api('/api/investigate', {location: locName});
-  // Don't process recheck — just use it to count remaining
-  // Actually the first call already found one; recheck would be greedy
-  // Just mark availability hint
-  if (!result.found && loc.searched) {
-    // Check if prerequisites are met — give a hint
-    loc.hint = 'Nothing new here yet. Try finding more evidence first.';
+  if (!result.found && result.hint) {
+    loc.hint = result.hint;
+  } else if (!result.found) {
+    loc.hint = 'Thoroughly searched — nothing else here.';
   }
 
   render();
@@ -436,20 +575,22 @@ async function interviewSuspect(name) {
 
   interviewed.add(name);
 
-  // Check for new locations in testimony
   addLocationsFromText(result.initial_statement || '');
   if (result.alibi) addLocationsFromText(result.alibi);
-  if (result.deeper_questions) {
-    result.deeper_questions.forEach(q => addLocationsFromText(q.topic + ' ' + q.response));
-  }
 
   showInterviewModal(result);
   render();
   updateStatus();
 }
 
+async function getFollowUp(suspect, topic) {
+  const result = await api('/api/followup', {suspect, topic});
+  if (!result || result.error) return;
+  addLocationsFromText(result.response);
+  return result.response;
+}
+
 function addLocationsFromText(text) {
-  // Scan text for location-like references
   const locationKeywords = [
     'wine cellar', 'study', 'library', 'garden', 'kitchen',
     'conservatory', 'garage', 'hallway', 'dining room', 'bedroom',
@@ -457,13 +598,10 @@ function addLocationsFromText(text) {
     'pantry', 'lounge', 'office', 'drawing room',
   ];
   locationKeywords.forEach(loc => {
-    const fullName = loc.startsWith('the ') ? loc : 'the ' + loc;
-    const shortName = 'the ' + loc.split(' ').pop();
-    // Match both "the wine cellar" and "wine cellar"
-    if (text.toLowerCase().includes(loc) && !locations.has(fullName) && !locations.has(loc)) {
+    if (text.toLowerCase().includes(loc)) {
       const key = 'the ' + loc;
       if (!locations.has(key)) {
-        locations.set(key, {searched: false, cluesFound: 0, available: -1, hint: 'Mentioned in testimony', isNew: true});
+        locations.set(key, {searched: false, cluesFound: 0, hint: 'Mentioned in testimony', isNew: true});
       }
     }
   });
@@ -474,24 +612,97 @@ function showInterviewModal(result) {
   let html = `<h3>${result.suspect}</h3>
     <div class="demeanor">Demeanor: ${result.demeanor || 'guarded'} · ${result.relationship || ''}</div>`;
 
-  if (result.already_interviewed) {
-    html += `<div class="meta">Follow-up questions:</div>`;
-    if (result.deeper_questions) {
-      result.deeper_questions.forEach(q => {
-        html += `<button class="follow-up-btn" onclick="this.classList.toggle('revealed')">
-          ${q.topic}
-          <div class="response">"${q.response}"</div>
+  if (result.initial_statement) {
+    html += `<div class="statement">"${result.initial_statement}"</div>`;
+  }
+
+  if (result.follow_ups && result.follow_ups.length > 0) {
+    html += `<div class="meta" style="margin-bottom:8px">Follow-up questions:</div>`;
+    result.follow_ups.forEach(fu => {
+      if (fu.unlocked) {
+        const id = 'fu-' + fu.topic.replace(/\s+/g, '-');
+        html += `<button class="follow-up-btn" id="${id}" onclick="handleFollowUp(this, '${result.suspect}', '${fu.topic.replace(/'/g, "\\'")}')">
+          ${fu.topic}
+          ${fu.response ? `<div class="response">"${fu.response}"</div>` : '<div class="response">Loading...</div>'}
         </button>`;
-      });
-    }
-  } else {
-    html += `<div class="statement">"${result.initial_statement}"</div>
-      <div class="meta">Click to ask follow-up questions later.</div>`;
+      } else {
+        html += `<button class="follow-up-btn locked">
+          ${fu.topic}
+          <div class="lock-text">🔒 Requires more evidence</div>
+        </button>`;
+      }
+    });
   }
 
   html += `<button class="close-btn" onclick="document.getElementById('interview-modal').classList.add('hidden')">Close</button>`;
   modal.innerHTML = html;
   document.getElementById('interview-modal').classList.remove('hidden');
+}
+
+async function handleFollowUp(btn, suspect, topic) {
+  if (btn.classList.contains('revealed')) return;
+  const response = await getFollowUp(suspect, topic);
+  if (response) {
+    const respDiv = btn.querySelector('.response');
+    if (respDiv) respDiv.textContent = `"${response}"`;
+    btn.classList.add('revealed');
+  }
+}
+
+async function reviewClue(clueId) {
+  if (reviewedClues[clueId]) return;
+  const result = await api('/api/review/' + clueId, {});
+  if (!result || result.error) return;
+  reviewedClues[clueId] = result;
+  // Update the evidence array entry
+  evidence = evidence.map(e => e.id === clueId ? {...e, reviewed: true, ...result} : e);
+  renderEvidence();
+}
+
+function openNoteModal(evidenceId, suspect) {
+  document.getElementById('quick-note-evidence').value = evidenceId || '';
+  document.getElementById('quick-note-suspect').value = suspect || '';
+  document.getElementById('quick-note-text').value = '';
+  document.getElementById('note-modal').classList.remove('hidden');
+}
+
+async function submitQuickNote() {
+  const text = document.getElementById('quick-note-text').value.trim();
+  if (!text) return;
+  await addNote(text,
+    document.getElementById('quick-note-evidence').value || undefined,
+    document.getElementById('quick-note-suspect').value || undefined
+  );
+  document.getElementById('note-modal').classList.add('hidden');
+}
+
+async function addNote(text, evidenceId, suspect) {
+  text = text || document.getElementById('note-text').value.trim();
+  if (!text) return;
+  evidenceId = evidenceId || undefined;
+  suspect = suspect || undefined;
+
+  const result = await api('/api/notes', {
+    text,
+    evidence_id: evidenceId,
+    suspect,
+  });
+  if (result && !result.error) {
+    notes.push(result);
+    document.getElementById('note-text').value = '';
+    renderNotes();
+  }
+}
+
+async function deleteNote(noteId) {
+  await api('/api/notes/' + noteId, {});
+  notes = notes.filter(n => n.id !== noteId);
+  renderNotes();
+}
+
+async function loadNotes() {
+  const result = await api('/api/notes');
+  if (result) notes = result.notes || [];
 }
 
 function openAccuse() {
@@ -571,7 +782,7 @@ function render() {
   html += '<div class="card-grid">';
   locations.forEach((loc, name) => {
     const isInterview = name.startsWith('interview');
-    if (isInterview) return; // skip interview pseudo-locations
+    if (isInterview) return;
 
     const isNew = loc.isNew;
     const cls = [
@@ -590,7 +801,7 @@ function render() {
                  name.includes('bedroom') ? '🛏️' :
                  name.includes('garage') ? '🔧' :
                  name.includes('conservatory') ? '🎹' :
-                 name.includes('river') || name.includes('pond') ? '🌊' :
+                 name.includes('dining') ? '🍽️' :
                  name.includes('attic') ? '📦' : '📍';
 
     html += `<div class="${cls}" onclick="searchLocation('${name}')">
@@ -604,8 +815,6 @@ function render() {
   html += '</div>';
 
   main.innerHTML = html;
-
-  // ── Evidence panel ────────────────────────────────
   renderEvidence();
 }
 
@@ -614,29 +823,68 @@ function renderEvidence() {
   const count = document.getElementById('clue-count');
   count.textContent = evidence.length + ' found';
 
+  if (evidence.length === 0) {
+    el.innerHTML = '<p style="font-size:11px;color:var(--muted)">Evidence will appear here as you investigate. Click "Review" to analyze.</p>';
+    return;
+  }
+
   const typeColors = {
     physical: '#d4943a', forensic: '#9b6de0',
     testimony: '#5a8fc4', document: '#5ab88f',
     circumstantial: '#6a6a8a'
   };
 
-  el.innerHTML = evidence.map(c => `
-    <div class="evidence-card">
+  el.innerHTML = evidence.map(c => {
+    const reviewed = reviewedClues[c.id];
+    const threadLabel = c.thread ? `<span style="font-size:8px;color:var(--muted);margin-left:4px">${c.thread}</span>` : '';
+
+    return `<div class="evidence-card">
       <span class="type-badge" style="background:${typeColors[c.type] || 'var(--muted)'};color:#fff">
         ${c.type}
-      </span>
-      <span class="strength-dots">${Array(c.strength).fill('<span class="dot"></span>').join('')}</span>
+      </span>${threadLabel}
       <div class="evidence-desc">${c.description}</div>
-      ${c.points_to && c.points_to !== 'nobody' ?
-        `<div class="points-to">→ ${c.points_to}</div>` : ''}
-    </div>
-  `).join('');
+      ${reviewed
+        ? `<div class="points-to">→ ${reviewed.points_to}${reviewed.is_dead_end ? ' <span style="color:var(--accent2)">(dead end)</span>' : ''}</div>
+           <span class="strength-dots">${Array(reviewed.strength).fill('<span class="dot"></span>').join('')}</span>
+           <span class="reviewed-tag">✓ Reviewed</span>`
+        : `<span class="review-link" onclick="reviewClue('${c.id}')">🔬 Review Evidence</span>`
+      }
+      <button class="note-btn" onclick="openNoteModal('${c.id}')">+ Note</button>
+    </div>`;
+  }).join('');
+}
+
+function renderNotes() {
+  const el = document.getElementById('notes-list');
+  const count = document.getElementById('note-count');
+  count.textContent = notes.length > 0 ? `(${notes.length})` : '';
+
+  if (notes.length === 0) {
+    el.innerHTML = '<p style="font-size:11px;color:var(--muted);margin-bottom:16px">No notes yet. Record observations as you investigate.</p>';
+    return;
+  }
+
+  el.innerHTML = notes.slice().reverse().map(n => {
+    const time = new Date(n.timestamp * 1000);
+    const timeStr = time.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+    const tags = [];
+    if (n.tagged_suspect) tags.push(`👤 ${n.tagged_suspect}`);
+    if (n.tagged_evidence) tags.push(`📎 ${n.tagged_evidence}`);
+
+    return `<div class="note-entry">
+      <button class="delete-note" onclick="deleteNote('${n.id}')">×</button>
+      <div class="note-time">${timeStr}</div>
+      <div class="note-text">${n.text}</div>
+      ${tags.length ? `<div class="note-tag">${tags.join(' · ')}</div>` : ''}
+    </div>`;
+  }).join('');
 }
 
 function updateStatus() {
   const el = document.getElementById('status-text');
   if (!caseData) { el.textContent = ''; return; }
-  el.textContent = `Evidence: ${evidence.length} · Interviewed: ${interviewed.size}/${caseData.suspects.length}${solved ? ' · SOLVED' : ''}`;
+  const reviewed = Object.keys(reviewedClues).length;
+  el.textContent = `Evidence: ${evidence.length} (${reviewed} reviewed) · Interviewed: ${interviewed.size}/${caseData.suspects.length}${solved ? ' · SOLVED' : ''}`;
 }
 </script>
 </body>

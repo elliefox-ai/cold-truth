@@ -844,7 +844,7 @@ function renderEvidence() {
       </span>${threadLabel}
       <div class="evidence-desc">${c.description}</div>
       ${reviewed
-        ? `<div class="points-to">→ ${reviewed.points_to}${reviewed.is_dead_end ? ' <span style="color:var(--accent2)">(dead end)</span>' : ''}</div>
+        ? `<div class="points-to">→ ${reviewed.points_to}</div>
            <span class="strength-dots">${Array(reviewed.strength).fill('<span class="dot"></span>').join('')}</span>
            <span class="reviewed-tag">✓ Reviewed</span>`
         : `<span class="review-link" onclick="reviewClue('${c.id}')">🔬 Review Evidence</span>`

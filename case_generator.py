@@ -486,9 +486,20 @@ def generate_case(seed: Optional[int] = None) -> TestCase:
     clues.append(opp2)
 
     # --- THREAD 3: MEANS ---
+    if cause == CauseOfDeath.DROWNING:
+        means_desc = f"Records show {killer.name} was one of the few people who knew about {weapon} — and had been there alone that evening."
+    elif cause == CauseOfDeath.STRANGULATION and weapon == "bare hands":
+        means_desc = f"Medical records indicate {killer.name} had the physical strength and training to overpower someone — unusual among the household."
+    elif cause == CauseOfDeath.POISON:
+        means_desc = f"Records show {killer.name} had recently purchased {weapon} — signed for it under a false name."
+    elif cause == CauseOfDeath.SHOT:
+        means_desc = f"Records show {killer.name} had access to {weapon} — it was registered to them and kept in their private quarters."
+    else:
+        means_desc = f"Records show {killer.name} had access to {weapon} — it was stored in a location only they had the key to."
+
     means1 = make_clue(
         EvidenceType.CIRCUMSTANTIAL,
-        f"Records show {killer.name} had access to {weapon} — it was stored in a location only they had the key to.",
+        means_desc,
         rng.choice(LOCATIONS), killer.name, 3,
         thread="means",
     )

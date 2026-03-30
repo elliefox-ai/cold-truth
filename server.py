@@ -130,9 +130,8 @@ def investigate():
             "strength": clue.strength,
             "location": clue.location,
             "thread": clue.thread,
-            "is_dead_end": clue.is_dead_end,
             "reveals_truth": clue.reveals_truth,
-            # points_to hidden until reviewed
+            # points_to and is_dead_end hidden until reviewed
         },
     })
 
@@ -270,7 +269,6 @@ def get_found_clues():
                     "description": clue.description,
                     "strength": clue.strength,
                     "thread": clue.thread,
-                    "is_dead_end": clue.is_dead_end,
                     "reveals_truth": clue.reveals_truth,
                     "reviewed": clue.id in reviewed,
                 }
@@ -299,7 +297,7 @@ def review_clue(clue_id):
 
     game_state["reviewed_clues"].append(clue_id)
 
-    # Return the full analysis
+    # Return the full analysis (don't reveal is_dead_end to player)
     for clue in current_case.clues:
         if clue.id == clue_id:
             return jsonify({
@@ -307,7 +305,6 @@ def review_clue(clue_id):
                 "points_to": clue.points_to,
                 "strength": clue.strength,
                 "thread": clue.thread,
-                "is_dead_end": clue.is_dead_end,
                 "reveals_truth": clue.reveals_truth,
             })
 
